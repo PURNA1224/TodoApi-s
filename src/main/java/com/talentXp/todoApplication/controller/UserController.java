@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,15 +44,11 @@ public class UserController {
 //	@PostAuthorize("hasRole('ADMIN') or returnObject.body.userId == principal.userId")
 	@PostMapping("/create")
 	public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequestModel requestModel) {
-		try {
-			UserDto userDto = mapper.map(requestModel, UserDto.class);
-			userDto.setRoles(Arrays.asList(Roles.ROLE_USER.name()));
-			UserDto createdUserDto = userService.createUser(userDto, requestModel.getPassword());
-			CreateUserResponseModel response = mapper.map(createdUserDto, CreateUserResponseModel.class);
-			return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-		}
+		UserDto userDto = mapper.map(requestModel, UserDto.class);
+		userDto.setRoles(Arrays.asList(Roles.ROLE_USER.name()));
+		UserDto createdUserDto = userService.createUser(userDto, requestModel.getPassword());
+		CreateUserResponseModel response = mapper.map(createdUserDto, CreateUserResponseModel.class);
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PreAuthorize("hasRole('ADMIN') or #userId == principal.userId")

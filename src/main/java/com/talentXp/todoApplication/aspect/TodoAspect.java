@@ -8,6 +8,15 @@ import org.springframework.stereotype.Component;
 
 import com.talentXp.todoApplication.annotations.ExecutionTime;
 
+
+/*
+ * The @Aspect annotation defines a class that handles cross-cutting concerns (e.g., logging, security).
+ * It works with different types of advice:
+ * - @Before: Executes code before the annotated method runs.
+ * - @After: Executes code after the annotated method runs, regardless of the method’s outcome.
+ * - @Around: Wraps the annotated method, allowing you to run code before and after the method, 
+ *   and even control whether the method is executed or not.
+ */
 @Aspect
 @Component
 public class TodoAspect {
@@ -22,11 +31,6 @@ public class TodoAspect {
 		System.out.println(duration + "ms");
 		return response;
 	}
-	
-//	@After("execution(* com.talentXp.todoApplication.controller..*(..))")
-//	public void log(JoinPoint point) {
-//		System.out.println(point.getSignature().getName() + " method called");
-//	}
 	
 	@Around("@annotation(com.talentXp.todoApplication.annotations.Crypto)")
 	public Object checkEncryption(ProceedingJoinPoint point) throws Throwable {

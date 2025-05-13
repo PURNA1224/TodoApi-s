@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.talentXp.todoApplication.Pojo.CreateTodoRequestModel;
 import com.talentXp.todoApplication.Pojo.TodoDto;
 import com.talentXp.todoApplication.entity.Todo;
+import com.talentXp.todoApplication.exceptionHandler.TodoNotFoundException;
 import com.talentXp.todoApplication.repository.TodoRepository;
 import com.talentXp.todoApplication.service.TodoService;
 
@@ -26,7 +27,7 @@ public class TodoServiceImpl implements TodoService {
 	@Override
 	public List<TodoDto> getAllTodos() {
 		
-		List<Todo> todo=  todoRepo.findAll();
+		Iterable<Todo> todo=  todoRepo.findAll();
 		List<TodoDto> todoDtos = new ArrayList<>();
 		
 		todo.forEach(thisTodo -> {
@@ -37,10 +38,10 @@ public class TodoServiceImpl implements TodoService {
 	}
 	
 	@Override
-	public TodoDto getTodoById(int id) {
+	public TodoDto getTodoById(int id) throws TodoNotFoundException{
 		Optional<Todo> todo = todoRepo.findById(id);
 		if(todo.isEmpty())
-			return null;
+			throw new TodoNotFoundException("Todo doesn't exist with id " + id);
 		TodoDto todoDto = mapper.map(todo, TodoDto.class);
 		return todoDto;
 	}
@@ -54,10 +55,10 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public TodoDto deleteTodo(int id) {
+	public TodoDto deleteTodo(int id) throws TodoNotFoundException {
 		Optional<Todo> todo = todoRepo.findById(id);
 		if(todo.isEmpty()) {
-			return null;
+			throw new TodoNotFoundException("Todo doesn't exist with id " + id);
 		}
 		else {
 			todoRepo.deleteById(id);
@@ -66,10 +67,15 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public TodoDto updateTodo(CreateTodoRequestModel todoReq, int id) {
+	public TodoDto updateTodo(CreateTodoRequestModel todoReq, int id) throws TodoNotFoundException {
+		
+		Optional<Todo> checkTodo = todoRepo.findById(id);
+		if(checkTodo.isEmpty()) {
+			throw new TodoNotFoundException("Todo doesn't exist with id " + id);
+		}
+		
 		Todo todo = mapper.map(todoReq, Todo.class);
 		todo.setId(id);
-		
 		Todo savedTodo = todoRepo.save(todo);
 
 		return mapper.map(savedTodo, TodoDto.class);

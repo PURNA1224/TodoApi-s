@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.talentXp.todoApplication.Pojo.UserDto;
 import com.talentXp.todoApplication.entity.RoleEntity;
 import com.talentXp.todoApplication.entity.UserEntity;
+import com.talentXp.todoApplication.exceptionHandler.EmailAlreadyExistException;
+import com.talentXp.todoApplication.exceptionHandler.UserServiceException;
 import com.talentXp.todoApplication.repository.RolesRepository;
 import com.talentXp.todoApplication.repository.UsersRepository;
 import com.talentXp.todoApplication.securityConfig.UserPrincipal;
@@ -37,8 +39,11 @@ public class UserServiceImple implements UserService{
 	BCryptPasswordEncoder bcrypt;
 	
 	@Override
-	public UserDto createUser(UserDto userDto, String password) {
+	public UserDto createUser(UserDto userDto, String password) throws EmailAlreadyExistException{
 		
+		UserEntity checkEmail = usersRepo.findByEmail(userDto.getEmail().toLowerCase());
+		if(checkEmail != null)
+			throw new EmailAlreadyExistException("User with email "+ userDto.getEmail() + " already exist, please use another email");
 		userDto.setUserId(UUID.randomUUID().toString());
 		userDto.setEncryptedPassword(bcrypt.encode(password));
 		userDto.setEmail(userDto.getEmail().toLowerCase());
@@ -58,26 +63,25 @@ public class UserServiceImple implements UserService{
 	
 	@Override
 	public UserDto getUserDetailsByEmail(String username) {
-		UserEntity userEntity = usersRepo.getByEmail(username);
+		UserEntity userEntity = usersRepo.findByEmail(username.toLowerCase());
 		return new ModelMapper().map(userEntity, UserDto.class);
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		UserEntity entity =	usersRepo.getByEmail(email);
+		UserEntity entity =	usersRepo.findByEmail(email.toLowerCase());
 		
 		if(entity == null) throw new UsernameNotFoundException("Email not found");
 		
 		return new UserPrincipal(entity);
-//		return new User(entity.getEmail(), entity.getEncryptedPassword(), true, true, true, true, new ArrayList<>());
 	}
 	
 
 	@Override
 	@Transactional
-	public String deleteUser(String id) {
+	public String deleteUser(String id) throws UserServiceException{
 		UserEntity deletedEntity = usersRepo.getByUserId(id);
-		if(deletedEntity == null) return "-1";
+		if(deletedEntity == null) throw new UserServiceException("User not found here");
 		usersRepo.deleteByUserId(id);
 		return id;
 	}
@@ -85,7 +89,7 @@ public class UserServiceImple implements UserService{
 	@Override
 	public UserDto getUserByUserId(String userId) {
 		UserEntity entity = usersRepo.findByUserId(userId);
-		if(entity == null) return null;
+		if(entity == null) throw new UserServiceException("User not found here");
 		return new ModelMapper().map(entity, UserDto.class);
 		
 	}

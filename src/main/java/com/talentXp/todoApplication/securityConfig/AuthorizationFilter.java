@@ -56,7 +56,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 							.getPayload();
 		
 		String email = claims.getSubject();
-		UserEntity entity = usersRepository.getByEmail(email);
+		UserEntity entity = usersRepository.findByEmail(email);
 		
 		if(entity == null ) return null;
 		

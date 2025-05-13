@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.talentXp.todoApplication.SpringApplicationContext;
+
 @Configuration
 public class SingletonClasses {
 	
@@ -19,5 +21,10 @@ public class SingletonClasses {
 	@Bean
 	BCryptPasswordEncoder getBcrypt() {
 		return new BCryptPasswordEncoder(12);
+	}
+	
+	@Bean
+	SpringApplicationContext getApplicationContext() {
+		return new SpringApplicationContext();
 	}
 }
