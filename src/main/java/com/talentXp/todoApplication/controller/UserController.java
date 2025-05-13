@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talentXp.todoApplication.Pojo.CreateUserRequestModel;
@@ -24,6 +25,7 @@ import com.talentXp.todoApplication.Pojo.UserResponseModel;
 import com.talentXp.todoApplication.repository.UsersRepository;
 import com.talentXp.todoApplication.service.UserService;
 import com.talentXp.todoApplication.shared.Roles;
+import com.talentXp.todoApplication.shared.Utils;
 
 import jakarta.validation.Valid;
 
@@ -40,6 +42,9 @@ public class UserController {
 	
 	@Autowired
 	ModelMapper mapper;
+	
+	@Autowired
+	Utils utils;
 	
 //	@PostAuthorize("hasRole('ADMIN') or returnObject.body.userId == principal.userId")
 	@PostMapping("/create")
@@ -66,5 +71,10 @@ public class UserController {
 	@DeleteMapping("/delete/{id}")
 	public String deleteUser(@PathVariable String id) {
 		return userService.deleteUser(id);
+	}
+	
+	@PostMapping("/regenerateToken")
+	public String regenerateToken(@RequestParam String userId) {
+		return utils.regenerateToken(userId);
 	}
 }

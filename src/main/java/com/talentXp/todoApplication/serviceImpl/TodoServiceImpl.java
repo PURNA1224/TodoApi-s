@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.talentXp.todoApplication.Pojo.CreateTodoRequestModel;
 import com.talentXp.todoApplication.Pojo.TodoDto;
 import com.talentXp.todoApplication.entity.Todo;
 import com.talentXp.todoApplication.exceptionHandler.TodoNotFoundException;
@@ -47,7 +46,7 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public TodoDto addTodo(CreateTodoRequestModel todoReq) {
+	public TodoDto addTodo(TodoDto todoReq) {
 		Todo todo = mapper.map(todoReq, Todo.class);
 		todoRepo.save(todo);
 		TodoDto todoDto = mapper.map(todo, TodoDto.class);
@@ -67,7 +66,7 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public TodoDto updateTodo(CreateTodoRequestModel todoReq, int id) throws TodoNotFoundException {
+	public TodoDto updateTodo(TodoDto todoReq, int id) throws TodoNotFoundException {
 		
 		Optional<Todo> checkTodo = todoRepo.findById(id);
 		if(checkTodo.isEmpty()) {

@@ -64,7 +64,8 @@ public class TodoController {
 	@PostAuthorize("hasRole('ADMIN')")
 	@PostMapping("/createTodo")
 	public ResponseEntity<?> addTodo(@Valid @RequestBody CreateTodoRequestModel todoRequest) {
-		TodoDto todoDto = todoService.addTodo(todoRequest);
+		TodoDto todoReqDto = mapper.map(todoRequest, TodoDto.class);
+		TodoDto todoDto = todoService.addTodo(todoReqDto);
 		CreateTodoResponseModel todoResponse = mapper.map(todoDto, CreateTodoResponseModel.class);
 		return ResponseEntity.ok().body(todoResponse);
 	}
@@ -73,7 +74,8 @@ public class TodoController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PutMapping("/update")
 	public ResponseEntity<?> updateTodo(@Valid @RequestBody CreateTodoRequestModel todoReq, @RequestParam int id) {
-		TodoDto todoDto = todoService.updateTodo(todoReq, id);
+		TodoDto todoReqDto = mapper.map(todoReq, TodoDto.class);
+		TodoDto todoDto = todoService.updateTodo(todoReqDto, id);
 		CreateTodoResponseModel todoResponse = mapper.map(todoDto, CreateTodoResponseModel.class);
 		return ResponseEntity.ok().body(todoResponse);
 	}
